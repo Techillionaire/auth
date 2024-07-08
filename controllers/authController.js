@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../utils/generateToken');
-const nodemailer = require('nodemailer');
+const sendEmail = require('../utils/sendEmail');
 const crypto = require('crypto');
 
 // Register new user
@@ -69,6 +69,8 @@ const authUser = asyncHandler(async (req, res) => {
     }
 });
 
+
+
 // Generate password reset token and send email
 const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -91,22 +93,16 @@ const forgotPassword = asyncHandler(async (req, res) => {
     const message = `You are receiving this email because you (or someone else) have requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
 
     try {
-        const transporter = nodemailer.createTransport({
-            service: 'Gmail',
-            auth: {
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        });
-
-        await transporter.sendMail({
-            to: user.email,
+        await sendEmail({
+            email: user.email,
             subject: 'Password reset token',
-            text: message,
+            message,
         });
 
         res.status(200).json({ success: true, data: 'Email sent' });
     } catch (error) {
+        console.error('Error sending email:', error);
+
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
 
@@ -116,6 +112,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
         throw new Error('Email could not be sent');
     }
 });
+
 
 // Reset user password
 const resetPassword = asyncHandler(async (req, res) => {
