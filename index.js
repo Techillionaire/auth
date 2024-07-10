@@ -7,11 +7,14 @@ const connectDB = require("./config/db")
 const { notFound, errorHandler } = require("./middleware/errorMiddleware")
 const authRoutes = require("./routes/authRoutes")
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
+
 connectDB()
 
 
 
-// Middleware to parse JSON payloads and cookies
+// Middleware to parse JSON payloads, cookies and cors
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser());

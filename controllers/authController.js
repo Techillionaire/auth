@@ -6,7 +6,7 @@ const crypto = require('crypto');
 
 // Register new user
 const registerUser = asyncHandler(async (req, res) => {
-    const { name, email, password } = req.body;
+    const { firstName, lastName, email, password, phone } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -16,9 +16,11 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const user = await User.create({
-        name,
+        firstName,
+        lastName,
         email,
         password,
+        phone
     });
 
     if (user) {
@@ -32,8 +34,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
         res.status(201).json({
             _id: user._id,
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
+            phone: user.phone,
             token,
         });
     } else {
@@ -137,7 +141,24 @@ const resetPassword = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, data: 'Password updated successfully' });
 });
 
-// Logour user
+// Get user session
+const getSession = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id).select('-password');
+    if (user) {
+        res.status(200).json({
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+        });
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
+// Logout user
 const logoutUser = (req, res) => {
     res.cookie('jwt', '', {
         httpOnly: true,
@@ -152,4 +173,5 @@ module.exports = {
     forgotPassword,
     resetPassword,
     logoutUser,
+    getSession,
 };
