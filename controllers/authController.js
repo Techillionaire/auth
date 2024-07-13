@@ -63,8 +63,10 @@ const authUser = asyncHandler(async (req, res) => {
 
         res.json({
             _id: user._id,
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
+            phone: user.phone,
             token,
         });
     } else {
@@ -72,6 +74,7 @@ const authUser = asyncHandler(async (req, res) => {
         throw new Error('Invalid email or password');
     }
 });
+
 
 
 
@@ -143,7 +146,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 // Get user session
 const getSession = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password');
+    const user = req.user;
     if (user) {
         res.status(200).json({
             _id: user._id,
@@ -157,6 +160,7 @@ const getSession = asyncHandler(async (req, res) => {
         throw new Error('User not found');
     }
 });
+
 
 // Logout user
 const logoutUser = (req, res) => {
