@@ -54,6 +54,18 @@ const authUser = asyncHandler(async (req, res) => {
 
     if (user && (await user.matchPassword(password))) {
         const token = generateToken(user._id);
+
+        // Construct user session information
+        const userSession = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            // Add more user details as needed
+        };
+
+        // Set the JWT token in a cookie
         res.cookie('jwt', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV !== 'development',
@@ -61,13 +73,10 @@ const authUser = asyncHandler(async (req, res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         });
 
-        res.json({
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            phone: user.phone,
+        // Return the JWT token and user session information in the response
+        res.status(200).json({
             token,
+            user: userSession, // Provide the user session details
         });
     } else {
         res.status(401);
