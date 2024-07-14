@@ -74,3 +74,15 @@
 // };
 
 // module.exports = sendEmail;
+
+// Endpoints to manage a collection of books
+// `GET /books`: To retrieve a list of books 
+//  `POST /books`: To create a new book 
+//  `GET /books/{id}`: To retrieve a specific book by id 
+//  `PUT /books`/{id}`: To update a specific book by id 
+//  `DELETE /book/{id}`: To delete a specific book by id (without id the entire book in the db will be deleted)
+
+// Endpoints needed to create an ecommerce website that sells shoes 
+//  `POST /users`: To create users visiting the site 
+// `GET /users{id}`: To retrieve a specific user 
+// `GET /products`: To retreive and render shoes to the users 
